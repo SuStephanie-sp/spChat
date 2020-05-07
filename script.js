@@ -1,44 +1,30 @@
 let data = {
+  loading: false,
   chat: [
     { name: "Owner", theme: "darkTheme", say: "" },
     { name: "Customer", theme: "whiteTheme", say: "" }
   ],
-  msg: [
-    {
-      timestamp: "2020/04/30 07:11:01",
-      sender: "Owner",
-      reciver: "Customer",
-      message: "How area you?",
-      isRead: true
-    },
-    {
-      timestamp: "2020/04/30 08:22:02",
-      sender: "Customer",
-      reciver: "Owner",
-      message: "Fine, thank you, and you?",
-      isRead: true
-    },
-    {
-      timestamp: "2020/04/30 09:33:03",
-      sender: "Owner",
-      reciver: "Customer",
-      message: "Good.",
-      isRead: false
-    },
-    {
-      timestamp: "2020/04/30 10:44:04",
-      sender: "Owner",
-      reciver: "Customer",
-      message:
-        "..........................................................................................................................................",
-      isRead: false
-    }
-  ]
+  msg: []
 };
 
 let vm = new Vue({
   el: "#app",
   data: data,
+
+  mounted() {
+    this.loading = true;
+
+    axios
+      .get("http://localhost:8888/msg")
+      .then(response => {
+        this.msg = response.data;
+        this.loading = false;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+
   methods: {
     another(index) {
       return this.chat[index == 0 ? 1 : 0].name;
@@ -56,6 +42,9 @@ let vm = new Vue({
       return date + " " + time;
     },
     msgHandler(index) {
+      if (this.chat[index].say == "") {
+        return;
+      }
       let temp = {
         timestamp: this.getTime(),
         sender: this.chat[index].name,
@@ -63,8 +52,16 @@ let vm = new Vue({
         message: this.chat[index].say,
         isRead: false
       };
-      this.msg.push(temp);
-      this.chat[index].say = "";
+
+      axios
+        .post("http://localhost:8888/msg", temp)
+        .then(response => {
+          this.msg.push(response.data);
+          this.chat[index].say = "";
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 });

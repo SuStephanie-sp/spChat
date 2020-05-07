@@ -14,26 +14,30 @@
     </div>
 
     <div id="app" class="l-wrap">
-        <section v-for="(speaker, index) in chat" :class="[speaker.name, speaker.theme]"
-            class="chat chat--replier chat--senter.xx">
-            <div class="chat__head">
-                <div class="chat__person">
-                    我是{{speaker.name}}，正在跟{{another(index)}}講話
+        <section class="chat">
+            <div v-for="(speaker, index) in chat" :class="[speaker.name, speaker.theme]" class="chat__wrap">
+                <div class="chat__head">
+                    我是{{ speaker.name }}，正在跟{{ another(index) }}講話
                 </div>
-            </div>
 
-            <div class="chat__box clearfix">
-                <div v-for="item in msg" class="chat__box__msgRow chat__box__msgRow--sent">
-                    <div class="chat__box__senter">{{item.sender}}：</div>
-                    <div class="chat__box__msg">{{item.message}}</div>
-                    <div class="chat__box__time">{{item.timestamp}}</div>
+                <div class="chat__body clearfix">
+                    <div v-for="item in msg"
+                        :class="'chat__msgRow--'+(item.sender === speaker.name? 'sent' : 'replier')"
+                        class="chat__msgRow">
+                        <div class="chat__box__senter">{{ item.sender }}</div>
+                        <div class="chat__box__msg">{{ item.message }}</div>
+                        <div class="chat__box__time">{{ item.timestamp }}</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="chat__text">
-                <div class="chat__text__bar">
-                    <input v-model.trim="speaker.say" @keyup.enter="msgHandler(index)" :name="speaker.name" type="text"
-                        placeholder="Message" />
+                <div class="chat__text clearfix">
+                    <div class="chat__text__bar">
+                        <input v-model.trim="speaker.say" @keyup.enter="msgHandler(index)" type="text"
+                            placeholder="Message" />
+                    </div>
+                    <button @click="msgHandler(index)" class="chat__text__submit">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
                 </div>
             </div>
         </section>
@@ -44,6 +48,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js'></script>
     <script src="script.js"></script>
 </body>
 
